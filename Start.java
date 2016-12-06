@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 /**
  * Created by sandeep on 12/5/16.
  */
-public class project2 {
+public class Start {
     public static void main(String[] args) throws IllegalArgumentException, IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         try {
