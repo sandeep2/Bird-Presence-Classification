@@ -43,9 +43,9 @@ public class project3 {
             job.setMapOutputKeyClass(IntWritable.class);
             job.setMapOutputValueClass(Text.class);
             job.setReducerClass(classifyReducer.class);
-            job.setOutputKeyClass(IntWritable.class);
+            job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(NullWritable.class);
-            FileInputFormat.addInputPath(job, new Path("/home/sandeep/Downloads/unlabeled_15000.csv"));
+            FileInputFormat.addInputPath(job, new Path("/home/sandeep/Downloads/unlabeled_15.csv"));
             FileOutputFormat.setOutputPath(job, new Path("/home/sandeep/Downloads/output1"));
             job.waitForCompletion(true);
 
@@ -272,7 +272,7 @@ public class project3 {
         }
     }
 
-    public static class classifyReducer extends Reducer<IntWritable, Text, IntWritable, NullWritable> {
+    public static class classifyReducer extends Reducer<IntWritable, Text, Text, NullWritable> {
         Instances data;
         public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             ArrayList<Attribute> attributes = new ArrayList<Attribute>();
@@ -310,9 +310,10 @@ public class project3 {
             data.setClassIndex(data.numAttributes() - 1);
             int j = 0;
 
-
             for (Text each : values) {
                 String[] line = each.toString().split(",");
+                context.write(new Text(line[0]),NullWritable.get());
+                System.out.println(each.toString());
                 int[] temp = new int[]{2, 3, 4, 5, 6, 7, 12, 13, 14, 16, 18, 968, 969, 970, 971, 972, 973, 997, 998, 999, 1000,
                         1001, 1002, 1003, 1004, 1005, 1006, 1007, 26};
                 double[] temp2 = new double[29];
@@ -351,8 +352,7 @@ public class project3 {
 
 
             try {
-
-
+                System.out.println(data);
                 ReplaceMissingValues rmv = new ReplaceMissingValues();
                 rmv.setInputFormat(data);
                 data = Filter.useFilter(data, rmv);
@@ -386,7 +386,8 @@ public class project3 {
                 System.out.println(eval_rp.toMatrixString());
 
                 Double a,c,d;
-                for(int i=0;i< data.numInstances();i++){
+                for(int i=0; i< data.numInstances(); i++){
+
                     try {
                         int zero = 0;
                         int one = 0;
@@ -404,16 +405,17 @@ public class project3 {
                         }else{one++;}
 
                         if(zero >= one){
-                            context.write(new IntWritable(0),NullWritable.get());
+                            context.write(new Text("0"),NullWritable.get());
                         }
                         else{
-                            context.write(new IntWritable(1),NullWritable.get());
+                            context.write(new Text("1"),NullWritable.get());
                         }
                     }
                     catch (Exception e){
                         e.printStackTrace();
                        // System.out.println(data.instance(i)+"---------------------------------------------------------");
                     }
+
                 }
 
             }catch (Exception e){
