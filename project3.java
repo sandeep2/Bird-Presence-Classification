@@ -15,6 +15,7 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.filters.Filter;
+import weka.filters.supervised.instance.SMOTE;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
 import java.io.*;
@@ -159,6 +160,12 @@ public class project3 {
                 nn.setInputFormat(data);
                 data = Filter.useFilter(data, nn);
 
+
+                SMOTE sm = new SMOTE();
+                sm.setPercentage(140);
+                sm.setNearestNeighbors(7);
+                sm.setInputFormat(data);
+
 //                AttributeSelection filter = new AttributeSelection();
 //                CfsSubsetEval eval = new CfsSubsetEval();
 //                GreedyStepwise search = new GreedyStepwise();
@@ -267,7 +274,7 @@ public class project3 {
             int temp = 1 + (int) (Math.random() * ((10 - 1) + 1));
             String[] line = value.toString().split(",");
             if (!line[4].equals("YEAR")) {
-                context.write(new IntWritable(2), value);
+                context.write(new IntWritable(temp), value);
             }
         }
     }
@@ -313,7 +320,6 @@ public class project3 {
             for (Text each : values) {
                 String[] line = each.toString().split(",");
                 context.write(new Text(line[0]),NullWritable.get());
-                System.out.println(each.toString());
                 int[] temp = new int[]{2, 3, 4, 5, 6, 7, 12, 13, 14, 16, 18, 968, 969, 970, 971, 972, 973, 997, 998, 999, 1000,
                         1001, 1002, 1003, 1004, 1005, 1006, 1007, 26};
                 double[] temp2 = new double[29];
@@ -352,7 +358,6 @@ public class project3 {
 
 
             try {
-                System.out.println(data);
                 ReplaceMissingValues rmv = new ReplaceMissingValues();
                 rmv.setInputFormat(data);
                 data = Filter.useFilter(data, rmv);
@@ -364,6 +369,7 @@ public class project3 {
                 nn.setOptions(options);
                 nn.setInputFormat(data);
                 data = Filter.useFilter(data, nn);
+
 
                 Evaluation eval = new Evaluation(data);
                 Classifier j48 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/j48.model");
@@ -413,7 +419,7 @@ public class project3 {
                     }
                     catch (Exception e){
                         e.printStackTrace();
-                       // System.out.println(data.instance(i)+"---------------------------------------------------------");
+                        // System.out.println(data.instance(i)+"---------------------------------------------------------");
                     }
 
                 }
