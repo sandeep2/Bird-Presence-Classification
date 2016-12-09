@@ -46,7 +46,7 @@ public class project3 {
             job.setReducerClass(classifyReducer.class);
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(NullWritable.class);
-            FileInputFormat.addInputPath(job, new Path("/home/sandeep/Downloads/unlabeled_15.csv"));
+            FileInputFormat.addInputPath(job, new Path("/home/sandeep/Downloads/1234.csv"));
             FileOutputFormat.setOutputPath(job, new Path("/home/sandeep/Downloads/output1"));
             job.waitForCompletion(true);
 
@@ -60,7 +60,7 @@ public class project3 {
 
     public static class InitialMapper extends Mapper<Object, Text, IntWritable, Text> {
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            int temp = 1 + (int) (Math.random() * ((3 - 1) + 1));
+            int temp = 1 + (int) (Math.random() * ((10 - 1) + 1));
             String[] line = value.toString().split(",");
             if (!line[4].equals("YEAR")) {
                 context.write(new IntWritable(temp), value);
@@ -178,7 +178,7 @@ public class project3 {
 //
 
 
-                if (key.get() == 1) {
+                if (key.get() == 1 || key.get() == 2 || key.get()==3) {
                     Evaluation eval = new Evaluation(data);
                     Random rand = new Random(1);
                     int folds = 10;
@@ -198,10 +198,12 @@ public class project3 {
                         accuracy_list.add(temp);
                     }
                     randomTree = svmArray.get(accuracy_list.indexOf(Collections.max(accuracy_list)));
-                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/rt.model",randomTree);
+                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/rt.model"+"-"+key.get(),randomTree);
                 }
 
-                if (key.get() == 2) {
+
+
+                if (key.get() == 4 || key.get() == 5 || key.get() == 6) {
                     Evaluation eval = new Evaluation(data);
                     Random rand = new Random(1);
                     int folds = 10;
@@ -218,7 +220,7 @@ public class project3 {
                         accuracy_list.add(temp);
                     }
                     j48 = j48Array.get(accuracy_list.indexOf(Collections.max(accuracy_list)));
-                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/j48.model",j48);
+                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/j48.model"+"-"+key.get(),j48);
                 }
 
 //                if (key.get() == 3) {
@@ -241,7 +243,7 @@ public class project3 {
 //                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/rf.model",randomForest);
 //                }
 
-                if (key.get() == 3) {
+                if (key.get() == 7 || key.get() == 8 || key.get() == 9 || key.get() == 10) {
                     Evaluation eval = new Evaluation(data);
                     int folds = 10;
                     ArrayList<Double> accuracy_list = new ArrayList<Double>();
@@ -257,7 +259,7 @@ public class project3 {
                         accuracy_list.add(temp);
                     }
                     repTree = dsArray.get(accuracy_list.indexOf(Collections.max(accuracy_list)));
-                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/rp.model",repTree);
+                    weka.core.SerializationHelper.write("/home/sandeep/Desktop/rp.model"+"-"+key.get(),repTree);
                 }
 
             } catch (Exception e) {
@@ -274,7 +276,7 @@ public class project3 {
             int temp = 1 + (int) (Math.random() * ((10 - 1) + 1));
             String[] line = value.toString().split(",");
             if (!line[4].equals("YEAR")) {
-                context.write(new IntWritable(temp), value);
+                context.write(new IntWritable(1), value);
             }
         }
     }
@@ -372,43 +374,108 @@ public class project3 {
 
 
                 Evaluation eval = new Evaluation(data);
-                Classifier j48 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/j48.model");
-                eval.evaluateModel(j48, data);
+                Classifier j48_1= (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/j48.model-4");
+                eval.evaluateModel(j48_1, data);
                 System.out.println(eval.toMatrixString());
 
-                Classifier randomtree = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rt.model");
-                Evaluation eval1 = new Evaluation(data);
-                eval1.evaluateModel(randomtree, data);
-                System.out.println(eval1.toMatrixString());
+                Evaluation eval_j48 = new Evaluation(data);
+                Classifier j48_2 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/j48.model-5");
+                eval_j48.evaluateModel(j48_2, data);
+                System.out.println(eval_j48.toMatrixString());
+
+                Evaluation eval_j48_1 = new Evaluation(data);
+                Classifier j48_3 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/j48.model-6");
+                eval_j48_1.evaluateModel(j48_3, data);
+                System.out.println(eval_j48_1.toMatrixString());
+
+                Classifier randomtree_1 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rt.model-1");
+                Evaluation eval_rt_1 = new Evaluation(data);
+                eval_rt_1.evaluateModel(randomtree_1, data);
+                System.out.println(eval_rt_1.toMatrixString());
+
+                Classifier randomtree_2 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rt.model-2");
+                Evaluation eval_rt_2 = new Evaluation(data);
+                eval_rt_2.evaluateModel(randomtree_2, data);
+                System.out.println(eval_rt_2.toMatrixString());
+
+                Classifier randomtree_3 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rt.model-3");
+                Evaluation eval_rt_3 = new Evaluation(data);
+                eval_rt_3.evaluateModel(randomtree_3, data);
+                System.out.println(eval_rt_3.toMatrixString());
+
 
 //                Classifier randomforest = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rf.model");
 //                Evaluation eval_rf = new Evaluation(data);
 //                eval_rf.evaluateModel(randomforest, data);
 //                System.out.println(eval_rf.toMatrixString());
 
-                Classifier reptree = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rp.model");
-                Evaluation eval_rp = new Evaluation(data);
-                eval_rp.evaluateModel(reptree, data);
-                System.out.println(eval_rp.toMatrixString());
+                Classifier reptree_1 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rp.model-7");
+                Evaluation eval_rp_1 = new Evaluation(data);
+                eval_rp_1.evaluateModel(reptree_1, data);
+                System.out.println(eval_rp_1.toMatrixString());
 
-                Double a,c,d;
+                Classifier reptree_2 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rp.model-8");
+                Evaluation eval_rp_2 = new Evaluation(data);
+                eval_rp_2.evaluateModel(reptree_2, data);
+                System.out.println(eval_rp_2.toMatrixString());
+
+                Classifier reptree_3 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rp.model-9");
+                Evaluation eval_rp_3 = new Evaluation(data);
+                eval_rp_3.evaluateModel(reptree_3, data);
+                System.out.println(eval_rp_3.toMatrixString());
+
+                Classifier reptree_4 = (Classifier) weka.core.SerializationHelper.read("/home/sandeep/Desktop/rp.model-10");
+                Evaluation eval_rp_4 = new Evaluation(data);
+                eval_rp_4.evaluateModel(reptree_4, data);
+                System.out.println(eval_rp_4.toMatrixString());
+
+                Double a,b,c,d,e,f,g,h,ii,jj;
                 for(int i=0; i< data.numInstances(); i++){
 
                     try {
                         int zero = 0;
                         int one = 0;
-                        a = randomtree.classifyInstance(data.instance(i));
+                        a = randomtree_1.classifyInstance(data.instance(i));
                         if (a == 0){
                             zero++;
                         }else{one++;}
-                        c = j48.classifyInstance(data.instance(i));
+                        c = randomtree_2.classifyInstance(data.instance(i));
                         if (c == 0){
                             zero++;
                         }else{one++;}
-                        d = reptree.classifyInstance(data.instance(i));
+                        d = randomtree_3.classifyInstance(data.instance(i));
                         if (d == 0){
                             zero++;
                         }else{one++;}
+                        g = reptree_4.classifyInstance(data.instance(i));
+                        if(g ==0){
+                            zero++;
+                        }else{one++;}
+                        b = reptree_1.classifyInstance(data.instance(i));
+                        if(b ==0){
+                            zero++;
+                        }else{one++;}
+                        e = reptree_2.classifyInstance(data.instance(i));
+                        if(e ==0){
+                            zero++;
+                        }else{one++;}
+                        f = reptree_3.classifyInstance(data.instance(i));
+                        if(f ==0){
+                            zero++;
+                        }else{one++;}
+                        h = j48_1.classifyInstance(data.instance(i));
+                        if(h ==0){
+                            zero++;
+                        }else{one++;}
+                        ii = j48_2.classifyInstance(data.instance(i));
+                        if(ii ==0){
+                            zero++;
+                        }else{one++;}
+                        jj = j48_3.classifyInstance(data.instance(i));
+                        if(jj ==0){
+                            zero++;
+                        }else{one++;}
+
 
                         if(zero >= one){
                             context.write(new Text("0"),NullWritable.get());
@@ -417,8 +484,8 @@ public class project3 {
                             context.write(new Text("1"),NullWritable.get());
                         }
                     }
-                    catch (Exception e){
-                        e.printStackTrace();
+                    catch (Exception ex){
+                        ex.printStackTrace();
                         // System.out.println(data.instance(i)+"---------------------------------------------------------");
                     }
 
